@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { init } from "@telegram-apps/sdk";
+import {init} from "@telegram-apps/sdk";
 
 import IcCopy from "@/assets/icons/ic_copy.svg";
 import ICQuestionColor from "@/assets/icons/Referral/ic_question_color.svg";
@@ -34,14 +34,17 @@ interface ModalState {
   toggled: boolean;
 }
 
-const ShareToFriend = ({ link, text }) => {
+const ShareToFriend = ({ link ,text}) => {
   const shareToTelegram = () => {
-    const message = `${text}\n${link}`; // 텍스트와 링크를 줄바꿈으로 구분
-    const telegramLink = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
-    window.open(telegramLink, "_blank");
+    const telegramLink = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+    window.open(telegramLink, '_blank');
   };
 
-  return <button onClick={shareToTelegram}>click</button>;
+  return (
+      <button onClick={shareToTelegram}>
+          click
+      </button>
+  );
 };
 
 const Referral = () => {
@@ -160,17 +163,11 @@ const Referral = () => {
 
           <ReferralBox>
             <h3>Your Link</h3>
-            <ShareToFriend link={`${TMA_URL}`} text="sample text for test" />
+            <ShareToFriend link={`${TMA_URL}`} text='test sample text'/>
             <ReferralLink>
               {isMutating ? <Loader /> : <h3>{referralLink}</h3>}
 
-              <CopyIcon
-                $isCopied={isCopied}
-                src={IcCopy}
-                alt="copy"
-                onClick={handleCopyClick}
-                id="referral page link copy"
-              />
+              <CopyIcon $isCopied={isCopied} src={IcCopy} alt="copy" onClick={handleCopyClick} id="referral page link copy"/>
             </ReferralLink>
           </ReferralBox>
 
@@ -218,7 +215,7 @@ const Referral = () => {
 };
 
 export default Referral;
-
+  
 const ReferralWrapper = styled.div`
   width: 100%;
   height: auto;
