@@ -36,7 +36,7 @@ interface ModalState {
 
 const ShareToFriend = ({ link ,text}) => {
   const shareToTelegram = () => {
-    const telegramLink = `https://t.me/share/url?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`;
+    const telegramLink = `https://t.me/share/url?text=${encodeURIComponent(`${text} ${link}`)}`;
     window.open(telegramLink, '_blank');
   };
 
