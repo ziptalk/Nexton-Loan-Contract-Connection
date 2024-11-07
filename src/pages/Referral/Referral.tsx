@@ -34,10 +34,10 @@ interface ModalState {
   toggled: boolean;
 }
 
-const ShareToFriend = ({ link }) => {
+const ShareToFriend = ({ link ,text}) => {
   const shareToTelegram = () => {
-      const telegramLink = `https://t.me/share/url?url=${encodeURIComponent(link)}`;
-      window.open(telegramLink, '_blank');
+    const telegramLink = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+    window.open(telegramLink, '_blank');
   };
 
   return (
@@ -163,7 +163,7 @@ const Referral = () => {
 
           <ReferralBox>
             <h3>Your Link</h3>
-            <ShareToFriend link={'https://hack-a-ton-frontend-git-main-nodes-projects.vercel.app/'}/>
+            <ShareToFriend link={`${TMA_URL}`} text='sample text for test'/>
             <ReferralLink>
               {isMutating ? <Loader /> : <h3>{referralLink}</h3>}
 
