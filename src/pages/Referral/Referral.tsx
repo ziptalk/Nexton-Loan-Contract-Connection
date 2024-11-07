@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import {init} from "@telegram-apps/sdk";
 
 import IcCopy from "@/assets/icons/ic_copy.svg";
 import ICQuestionColor from "@/assets/icons/Referral/ic_question_color.svg";
@@ -32,6 +33,19 @@ interface ModalState {
   type: "nxt" | "refer";
   toggled: boolean;
 }
+
+const ShareToFriend = ({ link }) => {
+  const shareToTelegram = () => {
+      const telegramLink = `https://t.me/share/url?url=${encodeURIComponent(link)}`;
+      window.open(telegramLink, '_blank');
+  };
+
+  return (
+      <button onClick={shareToTelegram}>
+          click
+      </button>
+  );
+};
 
 const Referral = () => {
   const navigate = useNavigate();
@@ -149,6 +163,7 @@ const Referral = () => {
 
           <ReferralBox>
             <h3>Your Link</h3>
+            <ShareToFriend link={'https://hack-a-ton-frontend-git-main-nodes-projects.vercel.app/'}/>
             <ReferralLink>
               {isMutating ? <Loader /> : <h3>{referralLink}</h3>}
 
@@ -200,7 +215,7 @@ const Referral = () => {
 };
 
 export default Referral;
-
+  
 const ReferralWrapper = styled.div`
   width: 100%;
   height: auto;
