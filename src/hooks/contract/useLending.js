@@ -1,4 +1,4 @@
-import { Address, TupleBuilder, contractAddress, toNano } from "@ton/core";
+import { Address, TupleBuilder, beginCell, toNano } from "@ton/core";
 
 import { NxtonWallet } from "./wrappers/tact_NxtonWallet";
 import { NftItem } from "./wrappers/NftItem";
@@ -6,17 +6,28 @@ import { useAsyncInitialize } from "./useAsyncInitialize";
 import { useTonClient } from "./useTonClient";
 import useTonConnect from "./useTonConnect";
 
+const LEND_FEE = toNano("0.11");
+const LEND_FORWARD = toNano("0.05");
+
 function lend() {
   const contractAddress = `${import.meta.env.VITE_LENDING_ADDRESS}`;
   const client = useTonClient();
   const { sender, address } = useTonConnect();
 
   return {
-    address: contractAddress,
-    sendMessage: async (nftAddress, data) => {
+    contractAddress: contractAddress,
+    sendMessage: async nftAddress => {
       if (nftAddress) {
         const nftItem = client.open(NftItem.createFromAddress(nftAddress));
-        await nftItem.sendTransferWithData(sender, data);
+        const param = {
+          value: LEND_FEE,
+          queryId: BigInt(Date.now()),
+          newOwnerAddress: Address.parse(contractAddress),
+          responseDestination: Address.parse(address),
+          forwardAmount: LEND_FORWARD,
+          forwardPayload: beginCell().storeUint(8, 8),
+        };
+        await nftItem.sendTransferWithData(sender, param);
       } else {
         return () => {};
       }

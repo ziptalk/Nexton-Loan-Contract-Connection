@@ -24,6 +24,15 @@ export type NftItemConfig = {
   itemContent: Cell;
 };
 
+export type NftTransferWithData = {
+  value: bigint;
+  queryId: bigint;
+  newOwnerAddress: Address;
+  responseDestination: Address;
+  forwardAmount: bigint;
+  forwardPayload: Builder;
+};
+
 export function nftItemConfigToCell(config: NftItemConfig): Cell {
   return beginCell()
     .storeUint(config.index, 64)
@@ -84,18 +93,7 @@ export class NftItem implements Contract {
     });
   }
 
-  async sendTransferWithData(
-    provider: ContractProvider,
-    via: Sender,
-    params: {
-      value: bigint;
-      queryId: bigint;
-      newOwnerAddress: Address;
-      responseDestination: Address;
-      forwardAmount: bigint;
-      forwardPayload: Builder;
-    },
-  ) {
+  async sendTransferWithData(provider: ContractProvider, via: Sender, params: NftTransferWithData) {
     await provider.internal(via, {
       value: params.value,
       body: beginCell()

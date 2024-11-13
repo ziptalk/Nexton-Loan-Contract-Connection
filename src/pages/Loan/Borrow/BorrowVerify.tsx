@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MainButton } from "@vkruglikov/react-telegram-web-app";
 
@@ -8,8 +8,10 @@ import { ConfirmBorrowModal } from "@/components/loan/Borrow/ConfirmBorrowModal.
 import ProgressBar from "@/components/loan/common/ProgressBar.tsx";
 import StakingInfo from "@/components/loan/common/StakingInfo.tsx";
 import { isDevMode } from "@/utils/isDevMode.ts";
+import * as Contract from "@/hooks/contract/useLending";
 
 import { BorrowHeaderBox, BorrowHeaderBoxTitle, BorrowWrapper } from "./BorrowDetails.styled.tsx";
+import { Address } from "@ton/core";
 
 const tele = (window as any).Telegram.WebApp;
 
@@ -33,6 +35,7 @@ const stakingInfoItems = [
 const BorrowVerify = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { sendMessage } = Contract.lend();
   const [modal, setModal] = useState<ModalState>({
     type: "confirmBorrow",
     toggled: false,
@@ -59,13 +62,16 @@ const BorrowVerify = () => {
     };
   }, [navigate]);
 
-  const handleBorrowConfirm = () => {
+  const handleBorrowConfirm = useCallback(async () => {
     toggleModal();
 
-    console.log("Borrow confirmed!");
+    //need to get nft_address from id
+    const nftAddress = Address.parse("kQCThabZFkGPocGzcHh1Q6aW4gIvETzGVihqPH4SlyuiZayr"); //!!!TEST NFT!!!!
+
+    await sendMessage(nftAddress);
 
     setModal({ type: "borrow", toggled: true });
-  };
+  }, [sendMessage, id]);
 
   return (
     <>
