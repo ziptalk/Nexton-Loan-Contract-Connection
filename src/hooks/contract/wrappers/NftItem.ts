@@ -1,4 +1,14 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from "@ton/core";
+import {
+  Address,
+  beginCell,
+  Cell,
+  Contract,
+  contractAddress,
+  ContractProvider,
+  Sender,
+  SendMode,
+  Builder,
+} from "@ton/core";
 import { Buffer } from "buffer";
 
 export const NFT_ITEM_CONTRACT_CODE =
@@ -70,6 +80,32 @@ export class NftItem implements Contract {
         .storeBit(false) // no custom payload
         .storeCoins(opts.fwdAmount || 0)
         .storeBit(false)
+        .endCell(),
+    });
+  }
+
+  async sendTransferWithData(
+    provider: ContractProvider,
+    via: Sender,
+    params: {
+      value: bigint;
+      queryId: bigint;
+      newOwnerAddress: Address;
+      responseDestination: Address;
+      forwardAmount: bigint;
+      forwardPayload: Builder;
+    },
+  ) {
+    await provider.internal(via, {
+      value: params.value,
+      body: beginCell()
+        .storeUint(0x10241a2b, 32) //operation code
+        .storeUint(params.queryId ?? 0, 64)
+        .storeAddress(params.newOwnerAddress)
+        .storeAddress(params.responseDestination)
+        .storeInt(BigInt(0), 1) //custom payload
+        .storeCoins(params.forwardAmount)
+        .storeUint(12, 8)
         .endCell(),
     });
   }
