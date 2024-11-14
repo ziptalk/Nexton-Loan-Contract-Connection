@@ -8,6 +8,8 @@ import useTonConnect from "./useTonConnect";
 
 const LEND_FEE = toNano("0.11");
 const LEND_FORWARD = toNano("0.05");
+const REPAY_FEE = toNano("0.1");
+const REPAY_FORWARD = toNano("0.05");
 
 function lend() {
   const contractAddress = `${import.meta.env.VITE_LENDING_ADDRESS}`;
@@ -54,18 +56,28 @@ function repay() {
     } catch (error) {
       return null;
     }
-  }, [client, sender]);
+  }, [client]);
 
   return {
-    address: contractAddress,
-    nxtonWalletAddress: nxtonWallet.address,
-    sendMessage: async (value, data) => {
-      await nxtonWallet.send(sender, { value: value }, data);
+    contractAddress: contractAddress,
+    sendMessage: async param => {
+      const data = {
+        $$type: "JettonTransfer",
+        queryId: BigInt(Date.now()),
+        amount: param.amount,
+        destination: contractAddress,
+        response_destination: address,
+        custom_payload: null,
+        forward_ton_amount: REPAY_FORWARD,
+        forward_payload: beginCell().storeAddress(param.nft).asSlice(),
+      };
+
+      await nxtonWallet.send(sender, { value: REPAY_FEE }, data);
     },
     getNxtonAmount: async () => {
       try {
-        const result = await nxtonWallet.getGetWalletData();
-        return result.balance;
+        const balance = await nxtonWallet.getBalance();
+        return balance;
       } catch (error) {
         return -1;
       }

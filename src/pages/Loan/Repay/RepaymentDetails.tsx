@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { MainButton } from "@vkruglikov/react-telegram-web-app";
 
 import BasicModal from "@/components/common/Modal/BasicModal";
@@ -7,6 +7,7 @@ import TransactionConfirmModal from "@/components/common/Modal/TransactionConfir
 import StakingInfo from "@/components/loan/common/StakingInfo.tsx";
 import { ConfirmRepaymentModal } from "@/components/loan/Repay/ConfirmRepaymentModal";
 import { isDevMode } from "@/utils/isDevMode.ts";
+import * as Contract from "@/hooks/contract/useLending";
 
 import {
   RepaymentContentBox,
@@ -18,6 +19,7 @@ import {
   RepayRateBoxDivider,
   RepayRateBoxHeader,
 } from "./RepaymentDetails.styled";
+import { Address, toNano } from "@ton/core";
 
 const alwaysVisibleItems = [
   { label: "Borrowed nxTON", value: "000.00 nxTON" },
@@ -60,6 +62,8 @@ const tele = (window as any).Telegram?.WebApp;
 // ! Data is currently mocked
 const RepaymentDetails = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { sendMessage, getNxtonAmount } = Contract.repay();
 
   const [modal, setModal] = useState<ModalState>({
     type: "confirmRepay",
@@ -89,13 +93,28 @@ const RepaymentDetails = () => {
     };
   }, [navigate]);
 
-  const handleRepayConfirm = () => {
+  const handleRepayConfirm = useCallback(async () => {
     toggleModal();
 
-    console.log("Repayment confirmed!");
+    //테스트용 가짜 데이터입니다.
+    const nftAddress = Address.parse("kQCThabZFkGPocGzcHh1Q6aW4gIvETzGVihqPH4SlyuiZayr");
+    const repayAmount = toNano("1");
+    //실제 코드에선 repay 대상 정보가 들어가야합니다.
+
+    const nxtonAmount = await getNxtonAmount();
+    console.log(nxtonAmount);
+    if (nxtonAmount < repayAmount) {
+      //do something.
+      //give notification about insufficient token
+      return;
+    }
+
+    await sendMessage({ amount: repayAmount, param: nftAddress });
+
+    // NEED TO ADD: SERVER CALL
 
     setModal({ type: "repay", toggled: true });
-  };
+  }, [id, sendMessage]);
 
   return (
     <div>

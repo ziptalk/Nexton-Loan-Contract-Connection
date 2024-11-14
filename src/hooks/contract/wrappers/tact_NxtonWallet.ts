@@ -2039,5 +2039,11 @@ export class NxtonWallet implements Contract {
         const result = loadTupleJettonWalletData(source.readTuple());
         return result;
     }
+
+    async getBalance(provider: ContractProvider){
+        let builder = new TupleBuilder();
+        let source = (await provider.get('get_wallet_data', builder.build())).stack;
+        return source.readNumber();
+    }
     
 }
