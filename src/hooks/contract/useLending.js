@@ -62,11 +62,11 @@ function repay() {
     contractAddress: contractAddress,
     sendMessage: async param => {
       const data = {
-        $$type: "JettonTransfer",
+        $$type: "TokenTransfer",
         queryId: BigInt(Date.now()),
         amount: param.amount,
-        destination: contractAddress,
-        response_destination: address,
+        destination: Address.parse(contractAddress),
+        response_destination: Address.parse(address),
         custom_payload: null,
         forward_ton_amount: REPAY_FORWARD,
         forward_payload: beginCell().storeAddress(param.nft).asSlice(),

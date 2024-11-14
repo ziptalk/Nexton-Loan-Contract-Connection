@@ -97,7 +97,7 @@ const RepaymentDetails = () => {
     toggleModal();
 
     //테스트용 가짜 데이터입니다.
-    const nftAddress = Address.parse("kQCThabZFkGPocGzcHh1Q6aW4gIvETzGVihqPH4SlyuiZayr");
+    const nftAddress = Address.parse("kQAtWmWvjg1Yr94RrYK5oXbQYQm6O1_1G6nYppolPvM5d8kv");
     const repayAmount = toNano("1");
     //실제 코드에선 repay 대상 정보가 들어가야합니다.
 
@@ -109,7 +109,7 @@ const RepaymentDetails = () => {
       return;
     }
 
-    await sendMessage({ amount: repayAmount, param: nftAddress });
+    await sendMessage({ amount: repayAmount, nft: nftAddress });
 
     // NEED TO ADD: SERVER CALL
 
